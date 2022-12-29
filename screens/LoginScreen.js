@@ -1,7 +1,42 @@
-import { KeyboardAvoidingView, StyleSheet, Text,TextInput, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Alert, KeyboardAvoidingView, StyleSheet, Text,TextInput, TouchableOpacity, View } from 'react-native'
+import React,{useState} from 'react';
+import { getAuth, signInWithEmailAndPassword,createUserWithEmailAndPassword } from 'firebase/auth';
+// import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { initializeApp } from '@firebase/app';
+import { firebaseConfig } from '../firebaseConfig';
 
 const LoginScreen = () => {
+    const [email,setemail] = useState('')
+    const [password,setPassword] = useState('')
+
+    const app = initializeApp(firebaseConfig)
+    const auth = getAuth(app);
+
+const handleCreateAccount = (e)=>{
+    e.preventDefault();
+    createUserWithEmailAndPassword(auth,email,password)
+    .then((userCredentials)=>{
+        console.log('Account created')
+        const user = userCredentials.user;
+        console.log(user)
+    })
+    .catch(error=>{
+        console.log(error)
+        Alert.alert(error.message)
+    })
+}
+
+const handleSignIn = ()=>{
+    // e.preventDefault();
+    signInWithEmailAndPassword(auth,email,password)
+    .then((userCredentials)=>{
+        console.log('Signed in')
+        const user = userCredentials.user;
+        console.log(user)
+    })
+    .catch(error=>alert(error.message))
+}
+
   return (
     //키보드가 화면가리는거 방지용s
     <KeyboardAvoidingView
@@ -9,29 +44,28 @@ const LoginScreen = () => {
     behavior="padding">
     <View style={styles.inputContainer}>
         <TextInput
-        placeholder="Email"
-        // value={ }
-        // onChangeText={text=>}
+        placeholder="email" 
+        value={email}
+        onChangeText={text=> setemail(text)}                                                                      
         style={styles.input}
         />
         <TextInput
         placeholder="Password"
-        // value={ }
-        // onChangeText={text=>}
+        value={password}
+        onChangeText={text=>setPassword(text)}
         //비반칠때 **표시
         secureTextEntry
         style={styles.input}
         />
     </View>
     <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={()=>{}} style={styles.button}>
+        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
             <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={()=>{}} style={[styles.button, styles.buttonOuline]}>
-            <Text style={styles.buttonOutlineText}>Register</Text>
+        <TouchableOpacity onPress={handleCreateAccount} style={[styles.button, styles.buttonOuline]}>
+            <Text style={styles.buttonOutlineText}>Signup</Text>
         </TouchableOpacity>
     </View>
-    
     </KeyboardAvoidingView>
 
   )
