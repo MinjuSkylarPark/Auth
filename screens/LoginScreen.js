@@ -1,9 +1,11 @@
 import { Alert, KeyboardAvoidingView, StyleSheet, Text,TextInput, TouchableOpacity, View } from 'react-native'
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import { getAuth, signInWithEmailAndPassword,createUserWithEmailAndPassword } from 'firebase/auth';
-// import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useNavigation } from '@react-navigation/core';
 import { initializeApp } from '@firebase/app';
 import { firebaseConfig } from '../firebaseConfig';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
+import { SafeAreaView } from 'react-native';
 
 const LoginScreen = () => {
     const [email,setemail] = useState('')
@@ -12,8 +14,22 @@ const LoginScreen = () => {
     const app = initializeApp(firebaseConfig)
     const auth = getAuth(app);
 
+    const navigation = useNavigation();
+
+    useEffect(()=>{
+        const unsubscribe = auth.onAuthStateChanged(user=>{
+            if(user){
+                //home으로 돌아가면 로그인이 없게끔
+                // navigation.navigate("Home")
+            navigation.replace("Home")
+            }
+        })
+        return unsubscribe
+    },[])
+
 const handleCreateAccount = (e)=>{
     e.preventDefault();
+    
     createUserWithEmailAndPassword(auth,email,password)
     .then((userCredentials)=>{
         console.log('Account created')
@@ -25,9 +41,9 @@ const handleCreateAccount = (e)=>{
         Alert.alert(error.message)
     })
 }
-
-const handleSignIn = ()=>{
-    // e.preventDefault();
+const handleSignIn = (e)=>{
+    e.preventDefault();
+    
     signInWithEmailAndPassword(auth,email,password)
     .then((userCredentials)=>{
         console.log('Signed in')
@@ -39,9 +55,10 @@ const handleSignIn = ()=>{
 
   return (
     //키보드가 화면가리는거 방지용s
-    <KeyboardAvoidingView
+    //<KeyboardAwareScrollView>
+    <SafeAreaView
     style={styles.container}
-    behavior="padding">
+    behavior={"padding"}>
     <View style={styles.inputContainer}>
         <TextInput
         placeholder="email" 
@@ -66,7 +83,9 @@ const handleSignIn = ()=>{
             <Text style={styles.buttonOutlineText}>Signup</Text>
         </TouchableOpacity>
     </View>
-    </KeyboardAvoidingView>
+ 
+    </SafeAreaView>
+   
 
   )
 }
@@ -75,6 +94,11 @@ export default LoginScreen
 
 const styles = StyleSheet.create({
     container:{
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    container1:{
         flex:1,
         justifyContent:'center',
         alignItems:'center'
