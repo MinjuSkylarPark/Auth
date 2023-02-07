@@ -1,26 +1,20 @@
-import { Alert, KeyboardAvoidingView, StyleSheet, Text,TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert,StyleSheet, Text,TextInput, TouchableOpacity, View,SafeAreaView } from 'react-native'
 import React,{useEffect, useState} from 'react';
 import { getAuth, signInWithEmailAndPassword,createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/core';
 import { initializeApp } from '@firebase/app';
 import { firebaseConfig } from '../firebaseConfig';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
-import { SafeAreaView } from 'react-native';
 
 const LoginScreen = () => {
     const [email,setemail] = useState('')
     const [password,setPassword] = useState('')
-
     const app = initializeApp(firebaseConfig)
     const auth = getAuth(app);
-
     const navigation = useNavigation();
 
     useEffect(()=>{
         const unsubscribe = auth.onAuthStateChanged(user=>{
             if(user){
-                //home으로 돌아가면 로그인이 없게끔
-                // navigation.navigate("Home")
             navigation.replace("Home")
             }
         })
@@ -29,7 +23,6 @@ const LoginScreen = () => {
 
 const handleCreateAccount = (e)=>{
     e.preventDefault();
-    
     createUserWithEmailAndPassword(auth,email,password)
     .then((userCredentials)=>{
         console.log('Account created')

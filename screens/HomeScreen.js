@@ -9,7 +9,6 @@ const HomeScreen = () => {
 
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app);
-
   const navigation = useNavigation();
 
   const handleSignOUt = ()=>{
@@ -20,10 +19,8 @@ const HomeScreen = () => {
     })
     .catch(error=>alert.apply(error.message))
   }
-
   return (
     <View style={styles.container}>
-      <Text style={styles.Text}> Hello baby nono</Text>
     <Text>Email:{auth.currentUser?.email}</Text>
     <TouchableOpacity style={styles.button} onPress={handleSignOUt}>
       <Text style={styles.buttonText}>Sign out</Text>
